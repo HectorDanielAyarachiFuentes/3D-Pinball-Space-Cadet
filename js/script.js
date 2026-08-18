@@ -1,7 +1,7 @@
 function getBooleanSetting(settingName){try{var name = "pinballspacecadet" + settingName;var nameEQ = name + "=";var ca = document.cookie.split(";");for(var i=0;i < ca.length;i++){var c = ca[i];while (c.charAt(0)==" "){c = c.substring(1,c.length);}if (c.indexOf(nameEQ) == 0){if (c.substring(nameEQ.length,c.length)=="true"){return true;}else{return false;}}}}catch(err){}return true;}
 			function setBooleanSetting(settingName,settingValue){try{var name = "pinballspacecadet" + settingName;var value = String(settingValue);var days = 999;var expires = "";if (days){var date = new Date();date.setTime(date.getTime() + (days*24*60*60*1000));expires = "; expires=" + date.toUTCString() + "; SameSite=Lax";}document.cookie = name + "=" + (value || "")  + expires + "; Secure; path=/";}catch(err){}}
 
-			var Module={preRun:[],postRun:[],print:function(){}(),printErr:function(e){},canvas:function(){var e=document.getElementById("canvas");return e.addEventListener("webglcontextlost",(function(e){}),!1),e}(),setStatus:function(e){},totalDependencies:0,monitorRunDependencies:function(e){}};
+			var Module={preRun:[],postRun:[function() { document.getElementsByClassName("pleasewait")[0].style.display = "none"; }],print:function(){}(),printErr:function(e){},canvas:function(){var e=document.getElementById("canvas");return e.addEventListener("webglcontextlost",(function(e){}),!1),e}(),setStatus:function(e){},totalDependencies:0,monitorRunDependencies:function(e){}};
 
 			var GAME_SOUND_ENABLED = getBooleanSetting("GAME_SOUND_ENABLED");
 
@@ -63,21 +63,37 @@ function getBooleanSetting(settingName){try{var name = "pinballspacecadet" + set
 
 			window.addEventListener("load", function()
 				{
-				document.getElementById("canvas").style.height = (window.innerHeight + 20) + "px";
-
 				// CHECKING IF THE GAME IS NOT RUNNING WITHIN AN IFRAME (Removed to allow iframe execution)
 				document.getElementsByClassName("gui_start")[0].addEventListener("click", function(event)
 					{
 					document.getElementsByClassName("gui_container")[0].style.display = "none";
 					document.getElementsByClassName("pleasewait")[0].style.display = "block";
+					document.getElementById("fullscreen-btn").style.display = "block";
 
 					const scriptGame = document.createElement("script");
 					scriptGame.src = "3DPinballSpaceCadet.js";
 					document.getElementsByTagName("body")[0].appendChild(scriptGame);
 					});
+
+				const fsBtn = document.getElementById("fullscreen-btn");
+				if (fsBtn) {
+					fsBtn.addEventListener("click", function() {
+						if (!document.fullscreenElement) {
+							document.documentElement.requestFullscreen().catch((err) => {
+								console.error(`Error attempting to enable full-screen mode: ${err.message}`);
+							});
+							fsBtn.innerText = "Exit Fullscreen";
+						} else {
+							if (document.exitFullscreen) {
+								document.exitFullscreen();
+							}
+							fsBtn.innerText = "Fullscreen";
+						}
+					});
+				}
 				});
 
 			window.addEventListener("resize", function()
 				{
-				document.getElementById("canvas").style.height = (window.innerHeight + 20) + "px";
+				// Handled by CSS
 				});
